@@ -1,28 +1,22 @@
-# template
+# navigation-helper-findactive
 
-[![Latest Stable Version](https://poser.pugx.org/mimmi20/template/v/stable?format=flat-square)](https://packagist.org/packages/mimmi20/template)
-[![Latest Unstable Version](https://poser.pugx.org/mimmi20/template/v/unstable?format=flat-square)](https://packagist.org/packages/mimmi20/template)
-[![License](https://poser.pugx.org/mimmi20/template/license?format=flat-square)](https://packagist.org/packages/mimmi20/template)
+[![Latest Stable Version](https://poser.pugx.org/mimmi20/navigation-helper-findactive/v/stable?format=flat-square)](https://packagist.org/packages/mimmi20/navigation-helper-findactive)
+[![Latest Unstable Version](https://poser.pugx.org/mimmi20/navigation-helper-findactive/v/unstable?format=flat-square)](https://packagist.org/packages/mimmi20/navigation-helper-findactive)
+[![License](https://poser.pugx.org/mimmi20/navigation-helper-findactive/license?format=flat-square)](https://packagist.org/packages/mimmi20/navigation-helper-findactive)
 
 ## Code Status
 
-[![codecov](https://codecov.io/gh/mimmi20/template/branch/master/graph/badge.svg)](https://codecov.io/gh/mimmi20/template)
-[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/mimmi20/template.svg)](http://isitmaintained.com/project/mimmi20/template "Average time to resolve an issue")
-[![Percentage of issues still open](http://isitmaintained.com/badge/open/mimmi20/template.svg)](http://isitmaintained.com/project/mimmi20/template "Percentage of issues still open")
+[![codecov](https://codecov.io/gh/mimmi20/navigation-helper-findactive/branch/master/graph/badge.svg)](https://codecov.io/gh/mimmi20/navigation-helper-findactive)
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/mimmi20/navigation-helper-findactive.svg)](http://isitmaintained.com/project/mimmi20/navigation-helper-findactive "Average time to resolve an issue")
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/mimmi20/navigation-helper-findactive.svg)](http://isitmaintained.com/project/mimmi20/navigation-helper-findactive "Percentage of issues still open")
 
 ## Installation
-
-:bulb: This is a great place for showing how to install the package, see below:
 
 Run
 
 ```
-$ composer require mimmi20/template
+$ composer require mimmi20/navigation-helper-findactive
 ```
-
-## Usage
-
-:bulb: This is a great place for showing a few usage examples!
 
 ## License
 
