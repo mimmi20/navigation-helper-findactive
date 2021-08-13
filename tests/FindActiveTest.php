@@ -12,6 +12,8 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\NavigationHelper\FindActive;
 
+use Laminas\Navigation\Exception\BadMethodCallException;
+use Laminas\Navigation\Page\AbstractPage;
 use Mezzio\Navigation\Navigation;
 use Mezzio\Navigation\Page\PageInterface;
 use Mezzio\Navigation\Page\Uri;
@@ -127,6 +129,58 @@ final class FindActiveTest extends TestCase
     /**
      * @throws Exception
      * @throws InvalidArgumentException
+     * @throws \Laminas\Navigation\Exception\InvalidArgumentException
+     * @throws BadMethodCallException
+     */
+    public function testFindActiveOneActivePage2(): void
+    {
+        $container = new \Laminas\Navigation\Navigation();
+
+        $page = $this->getMockBuilder(AbstractPage::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $page->expects(self::never())
+            ->method('isVisible');
+        $page->expects(self::never())
+            ->method('getResource');
+        $page->expects(self::never())
+            ->method('getPrivilege');
+        $page->expects(self::never())
+            ->method('getParent');
+        $page->expects(self::once())
+            ->method('isActive')
+            ->with(false)
+            ->willReturn(true);
+        $page->expects(self::exactly(2))
+            ->method('getOrder')
+            ->willReturn(0);
+        $page->expects(self::once())
+            ->method('setParent')
+            ->with($container);
+
+        $container->addPage($page);
+
+        $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $acceptHelper->expects(self::once())
+            ->method('accept')
+            ->with($page)
+            ->willReturn(true);
+
+        $helper = new FindActive($acceptHelper);
+
+        $expected = [
+            'page' => $page,
+            'depth' => 0,
+        ];
+
+        self::assertSame($expected, $helper->find($container, 0, 42));
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
      * @throws \Mezzio\Navigation\Exception\InvalidArgumentException
      */
     public function testFindActiveOneActivePageOutOfRange(): void
@@ -149,6 +203,51 @@ final class FindActiveTest extends TestCase
         $page->expects(self::once())
             ->method('hashCode')
             ->willReturn('page');
+        $page->expects(self::exactly(2))
+            ->method('getOrder')
+            ->willReturn(0);
+        $page->expects(self::once())
+            ->method('setParent')
+            ->with($container);
+
+        $container->addPage($page);
+
+        $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $acceptHelper->expects(self::never())
+            ->method('accept');
+
+        $helper = new FindActive($acceptHelper);
+
+        $expected = [];
+
+        self::assertSame($expected, $helper->find($container, 2, 42));
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws \Laminas\Navigation\Exception\InvalidArgumentException
+     * @throws BadMethodCallException
+     */
+    public function testFindActiveOneActivePageOutOfRange2(): void
+    {
+        $container = new \Laminas\Navigation\Navigation();
+
+        $page = $this->getMockBuilder(AbstractPage::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $page->expects(self::never())
+            ->method('isVisible');
+        $page->expects(self::never())
+            ->method('getResource');
+        $page->expects(self::never())
+            ->method('getPrivilege');
+        $page->expects(self::never())
+            ->method('getParent');
+        $page->expects(self::never())
+            ->method('isActive');
         $page->expects(self::exactly(2))
             ->method('getOrder')
             ->willReturn(0);
@@ -526,5 +625,348 @@ final class FindActiveTest extends TestCase
         ];
 
         self::assertSame($expected, $helper->find($container, -1, 3));
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws \Laminas\Navigation\Exception\InvalidArgumentException
+     * @throws BadMethodCallException
+     */
+    public function testFindActiveOneActivePageRecursive5(): void
+    {
+        $resource  = 'testResource';
+        $privilege = 'testPrivilege';
+
+        $parentPage = new \Laminas\Navigation\Page\Uri();
+        $parentPage->setVisible(true);
+        $parentPage->setActive(true);
+        $parentPage->setUri('parent');
+        $parentPage->setResource($resource);
+        $parentPage->setPrivilege($privilege);
+
+        $page1 = $this->getMockBuilder(AbstractPage::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $page1->expects(self::never())
+            ->method('isVisible');
+        $page1->expects(self::never())
+            ->method('getResource');
+        $page1->expects(self::never())
+            ->method('getPrivilege');
+        $page1->expects(self::never())
+            ->method('getParent');
+        $page1->expects(self::once())
+            ->method('isActive')
+            ->with(false)
+            ->willReturn(true);
+        $page1->expects(self::exactly(2))
+            ->method('getOrder')
+            ->willReturn(0);
+        $page1->expects(self::once())
+            ->method('setParent')
+            ->with($parentPage);
+
+        $page2 = new \Laminas\Navigation\Page\Uri();
+        $page2->setActive(true);
+        $page2->setUri('test2');
+
+        $parentPage->addPage($page1);
+        $parentPage->addPage($page2);
+
+        $parentParentPage = new \Laminas\Navigation\Page\Uri();
+        $parentParentPage->setVisible(true);
+        $parentParentPage->setActive(true);
+        $parentParentPage->setUri('parentParent');
+
+        $parentParentParentPage = new \Laminas\Navigation\Page\Uri();
+        $parentParentParentPage->setVisible(true);
+        $parentParentParentPage->setActive(true);
+        $parentParentParentPage->setUri('parentParentParent');
+
+        $parentParentPage->addPage($parentPage);
+        $parentParentParentPage->addPage($parentParentPage);
+
+        $container = new \Laminas\Navigation\Navigation();
+        $container->addPage($parentParentParentPage);
+
+        $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $acceptHelper->expects(self::exactly(5))
+            ->method('accept')
+            ->withConsecutive([$page1], [$page2], [$parentPage], [$parentParentPage], [$parentParentParentPage])
+            ->willReturnOnConsecutiveCalls(true, true, true, true, true);
+
+        $helper = new FindActive($acceptHelper);
+
+        $expected = [
+            'page' => $page1,
+            'depth' => 3,
+        ];
+
+        self::assertSame($expected, $helper->find($container, -1, 3));
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws \Laminas\Navigation\Exception\InvalidArgumentException
+     * @throws BadMethodCallException
+     */
+    public function testFindActiveOneActivePageRecursive6(): void
+    {
+        $resource  = 'testResource';
+        $privilege = 'testPrivilege';
+
+        $parentPage = new \Laminas\Navigation\Page\Uri();
+        $parentPage->setVisible(true);
+        $parentPage->setResource($resource);
+        $parentPage->setPrivilege($privilege);
+
+        $page1 = $this->getMockBuilder(AbstractPage::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $page1->expects(self::never())
+            ->method('isVisible');
+        $page1->expects(self::never())
+            ->method('getResource');
+        $page1->expects(self::never())
+            ->method('getPrivilege');
+        $page1->expects(self::once())
+            ->method('getParent')
+            ->willReturn($parentPage);
+        $page1->expects(self::once())
+            ->method('isActive')
+            ->with(false)
+            ->willReturn(true);
+        $page1->expects(self::exactly(2))
+            ->method('getOrder')
+            ->willReturn(0);
+        $page1->expects(self::once())
+            ->method('setParent')
+            ->with($parentPage);
+
+        $page2 = $this->getMockBuilder(AbstractPage::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $page2->expects(self::never())
+            ->method('isVisible');
+        $page2->expects(self::never())
+            ->method('getResource');
+        $page2->expects(self::never())
+            ->method('getPrivilege');
+        $page2->expects(self::never())
+            ->method('getParent');
+        $page2->expects(self::never())
+            ->method('isActive');
+        $page2->expects(self::exactly(2))
+            ->method('getOrder')
+            ->willReturn(0);
+        $page2->expects(self::once())
+            ->method('setParent')
+            ->with($parentPage);
+
+        $page3 = $this->getMockBuilder(AbstractPage::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $page3->expects(self::never())
+            ->method('isVisible');
+        $page3->expects(self::never())
+            ->method('getResource');
+        $page3->expects(self::never())
+            ->method('getPrivilege');
+        $page3->expects(self::never())
+            ->method('getParent');
+        $page3->expects(self::never())
+            ->method('isActive');
+        $page3->expects(self::exactly(2))
+            ->method('getOrder')
+            ->willReturn(0);
+        $page3->expects(self::once())
+            ->method('setParent')
+            ->with($parentPage);
+
+        $parentPage->addPage($page1);
+        $parentPage->addPage($page2);
+        $parentPage->addPage($page3);
+
+        $container = new \Laminas\Navigation\Navigation();
+        $container->addPage($parentPage);
+
+        $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $acceptHelper->expects(self::exactly(4))
+            ->method('accept')
+            ->withConsecutive([$page1], [$page2], [$page3], [$parentPage])
+            ->willReturnOnConsecutiveCalls(true, false, false, true);
+
+        $helper = new FindActive($acceptHelper);
+
+        $expected = [
+            'page' => $parentPage,
+            'depth' => 0,
+        ];
+
+        self::assertSame($expected, $helper->find($container, 0, 0));
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws \Laminas\Navigation\Exception\InvalidArgumentException
+     * @throws BadMethodCallException
+     */
+    public function testFindActiveOneActivePageRecursive7(): void
+    {
+        $resource  = 'testResource';
+        $privilege = 'testPrivilege';
+
+        $parentPage = new \Laminas\Navigation\Page\Uri();
+        $parentPage->setVisible(true);
+        $parentPage->setActive(true);
+        $parentPage->setUri('parent');
+        $parentPage->setResource($resource);
+        $parentPage->setPrivilege($privilege);
+
+        $page1 = $this->getMockBuilder(AbstractPage::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $page1->expects(self::never())
+            ->method('isVisible');
+        $page1->expects(self::never())
+            ->method('getResource');
+        $page1->expects(self::never())
+            ->method('getPrivilege');
+        $page1->expects(self::once())
+            ->method('getParent')
+            ->willReturn($parentPage);
+        $page1->expects(self::once())
+            ->method('isActive')
+            ->with(false)
+            ->willReturn(true);
+        $page1->expects(self::exactly(2))
+            ->method('getOrder')
+            ->willReturn(0);
+        $page1->expects(self::once())
+            ->method('setParent')
+            ->with($parentPage);
+
+        $page2 = new \Laminas\Navigation\Page\Uri();
+        $page2->setActive(true);
+        $page2->setUri('test2');
+
+        $parentPage->addPage($page1);
+        $parentPage->addPage($page2);
+
+        $parentParentPage = new \Laminas\Navigation\Page\Uri();
+        $parentParentPage->setVisible(true);
+        $parentParentPage->setActive(true);
+        $parentParentPage->setUri('parentParent');
+
+        $parentParentParentPage = new \Laminas\Navigation\Page\Uri();
+        $parentParentParentPage->setVisible(true);
+        $parentParentParentPage->setActive(true);
+        $parentParentParentPage->setUri('parentParentParent');
+
+        $parentParentPage->addPage($parentPage);
+        $parentParentParentPage->addPage($parentParentPage);
+
+        $container = new \Laminas\Navigation\Navigation();
+        $container->addPage($parentParentParentPage);
+
+        $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $acceptHelper->expects(self::exactly(3))
+            ->method('accept')
+            ->withConsecutive([$page1], [$page2], [$parentPage])
+            ->willReturnOnConsecutiveCalls(true, true, true);
+
+        $helper = new FindActive($acceptHelper);
+
+        $expected = [];
+
+        self::assertSame($expected, $helper->find($container, 2, 1));
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws \Laminas\Navigation\Exception\InvalidArgumentException
+     * @throws BadMethodCallException
+     */
+    public function testFindActiveOneActivePageRecursive8(): void
+    {
+        $resource  = 'testResource';
+        $privilege = 'testPrivilege';
+
+        $parentPage = new \Laminas\Navigation\Page\Uri();
+        $parentPage->setVisible(true);
+        $parentPage->setActive(true);
+        $parentPage->setUri('parent');
+        $parentPage->setResource($resource);
+        $parentPage->setPrivilege($privilege);
+
+        $page1 = $this->getMockBuilder(AbstractPage::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $page1->expects(self::never())
+            ->method('isVisible');
+        $page1->expects(self::never())
+            ->method('getResource');
+        $page1->expects(self::never())
+            ->method('getPrivilege');
+        $page1->expects(self::once())
+            ->method('getParent')
+            ->willReturn(null);
+        $page1->expects(self::once())
+            ->method('isActive')
+            ->with(false)
+            ->willReturn(true);
+        $page1->expects(self::exactly(2))
+            ->method('getOrder')
+            ->willReturn(0);
+        $page1->expects(self::once())
+            ->method('setParent')
+            ->with($parentPage);
+
+        $page2 = new \Laminas\Navigation\Page\Uri();
+        $page2->setActive(true);
+        $page2->setUri('test2');
+
+        $parentPage->addPage($page1);
+        $parentPage->addPage($page2);
+
+        $parentParentPage = new \Laminas\Navigation\Page\Uri();
+        $parentParentPage->setVisible(true);
+        $parentParentPage->setActive(true);
+        $parentParentPage->setUri('parentParent');
+
+        $parentParentParentPage = new \Laminas\Navigation\Page\Uri();
+        $parentParentParentPage->setVisible(true);
+        $parentParentParentPage->setActive(true);
+        $parentParentParentPage->setUri('parentParentParent');
+
+        $parentParentPage->addPage($parentPage);
+        $parentParentParentPage->addPage($parentParentPage);
+
+        $container = new \Laminas\Navigation\Navigation();
+        $container->addPage($parentParentParentPage);
+
+        $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $acceptHelper->expects(self::exactly(5))
+            ->method('accept')
+            ->withConsecutive([$page1], [$page2], [$parentPage], [$parentParentPage], [$parentParentParentPage])
+            ->willReturnOnConsecutiveCalls(true, true, true, true, true);
+
+        $helper = new FindActive($acceptHelper);
+
+        $expected = [];
+
+        self::assertSame($expected, $helper->find($container, -1, -1));
     }
 }
