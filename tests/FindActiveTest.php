@@ -12,7 +12,6 @@ declare(strict_types = 1);
 
 namespace Mimmi20Test\NavigationHelper\FindActive;
 
-use Laminas\Navigation\Exception\BadMethodCallException;
 use Laminas\Navigation\Page\AbstractPage;
 use Mezzio\Navigation\Navigation;
 use Mezzio\Navigation\Page\PageInterface;
@@ -130,7 +129,6 @@ final class FindActiveTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws \Laminas\Navigation\Exception\InvalidArgumentException
-     * @throws BadMethodCallException
      */
     public function testFindActiveOneActivePage2(): void
     {
@@ -229,7 +227,6 @@ final class FindActiveTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws \Laminas\Navigation\Exception\InvalidArgumentException
-     * @throws BadMethodCallException
      */
     public function testFindActiveOneActivePageOutOfRange2(): void
     {
@@ -631,7 +628,6 @@ final class FindActiveTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws \Laminas\Navigation\Exception\InvalidArgumentException
-     * @throws BadMethodCallException
      */
     public function testFindActiveOneActivePageRecursive5(): void
     {
@@ -712,7 +708,6 @@ final class FindActiveTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws \Laminas\Navigation\Exception\InvalidArgumentException
-     * @throws BadMethodCallException
      */
     public function testFindActiveOneActivePageRecursive6(): void
     {
@@ -816,7 +811,6 @@ final class FindActiveTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws \Laminas\Navigation\Exception\InvalidArgumentException
-     * @throws BadMethodCallException
      */
     public function testFindActiveOneActivePageRecursive7(): void
     {
@@ -895,7 +889,6 @@ final class FindActiveTest extends TestCase
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws \Laminas\Navigation\Exception\InvalidArgumentException
-     * @throws BadMethodCallException
      */
     public function testFindActiveOneActivePageRecursive8(): void
     {
