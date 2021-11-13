@@ -45,6 +45,8 @@ final class FindActiveFactory implements FactoryInterface
             ]
         );
 
+        assert($acceptHelper instanceof AcceptHelperInterface);
+
         return new FindActive($acceptHelper);
     }
 }
