@@ -16,6 +16,14 @@
         "mimmi20/navigation-helper-acceptpage": "^2.0.0"
     },
     "require-dev": {
+        "ext-ctype": "*",
+        "ext-dom": "*",
+        "ext-intl": "*",
+        "ext-simplexml": "*",
+        "ext-tokenizer": "*",
+        "ext-xml": "*",
+        "ext-xmlwriter": "*",
+        "infection/infection": "^0.27.7",
         "laminas/laminas-modulemanager": "^2.11.0",
         "laminas/laminas-navigation": "^2.11.1",
         "laminas/laminas-permissions-acl": "^2.8.0",
