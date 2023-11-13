@@ -13,7 +13,6 @@
     ],
     "require": {
         "php": "^8.1.0",
-        "ext-mbstring": "*",
         "mimmi20/navigation-helper-acceptpage": "^2.0.0"
     },
     "require-dev": {
