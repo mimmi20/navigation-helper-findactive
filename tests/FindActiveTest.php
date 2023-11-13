@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/navigation-helper-findactive package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2023, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,6 +13,7 @@ declare(strict_types = 1);
 namespace Mimmi20Test\NavigationHelper\FindActive;
 
 use Laminas\Navigation\Page\AbstractPage;
+use Mezzio\Navigation\Exception\InvalidArgumentException;
 use Mezzio\Navigation\Navigation;
 use Mezzio\Navigation\Page\PageInterface;
 use Mezzio\Navigation\Page\Uri;
@@ -20,14 +21,12 @@ use Mimmi20\NavigationHelper\Accept\AcceptHelperInterface;
 use Mimmi20\NavigationHelper\FindActive\FindActive;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
-use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 final class FindActiveTest extends TestCase
 {
     /**
      * @throws Exception
      * @throws InvalidArgumentException
-     * @throws \Mezzio\Navigation\Exception\InvalidArgumentException
      */
     public function testFindActiveNoActivePages(): void
     {
@@ -74,7 +73,6 @@ final class FindActiveTest extends TestCase
     /**
      * @throws Exception
      * @throws InvalidArgumentException
-     * @throws \Mezzio\Navigation\Exception\InvalidArgumentException
      */
     public function testFindActiveOneActivePage(): void
     {
@@ -127,7 +125,6 @@ final class FindActiveTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws InvalidArgumentException
      * @throws \Laminas\Navigation\Exception\InvalidArgumentException
      */
     public function testFindActiveOneActivePage2(): void
@@ -179,7 +176,6 @@ final class FindActiveTest extends TestCase
     /**
      * @throws Exception
      * @throws InvalidArgumentException
-     * @throws \Mezzio\Navigation\Exception\InvalidArgumentException
      */
     public function testFindActiveOneActivePageOutOfRange(): void
     {
@@ -225,7 +221,6 @@ final class FindActiveTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws InvalidArgumentException
      * @throws \Laminas\Navigation\Exception\InvalidArgumentException
      */
     public function testFindActiveOneActivePageOutOfRange2(): void
@@ -270,7 +265,6 @@ final class FindActiveTest extends TestCase
     /**
      * @throws Exception
      * @throws InvalidArgumentException
-     * @throws \Mezzio\Navigation\Exception\InvalidArgumentException
      */
     public function testFindActiveOneActivePageRecursive(): void
     {
@@ -364,10 +358,26 @@ final class FindActiveTest extends TestCase
         $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $acceptHelper->expects(self::exactly(4))
+        $matcher      = self::exactly(4);
+        $acceptHelper->expects($matcher)
             ->method('accept')
-            ->withConsecutive([$page1], [$page2], [$page3], [$parentPage])
-            ->willReturnOnConsecutiveCalls(true, false, false, true);
+            ->willReturnCallback(
+                static function (AbstractPage | PageInterface $page, bool $recursive = true) use ($matcher, $page1, $page2, $page3, $parentPage): bool {
+                    match ($matcher->numberOfInvocations()) {
+                        1 => self::assertSame($page1, $page),
+                        2 => self::assertSame($page2, $page),
+                        3 => self::assertSame($page3, $page),
+                        default => self::assertSame($parentPage, $page),
+                    };
+
+                    self::assertTrue($recursive);
+
+                    return match ($matcher->numberOfInvocations()) {
+                        2, 3 => false,
+                        default => true,
+                    };
+                },
+            );
 
         $helper = new FindActive($acceptHelper);
 
@@ -382,7 +392,6 @@ final class FindActiveTest extends TestCase
     /**
      * @throws Exception
      * @throws InvalidArgumentException
-     * @throws \Mezzio\Navigation\Exception\InvalidArgumentException
      */
     public function testFindActiveOneActivePageRecursive2(): void
     {
@@ -448,10 +457,22 @@ final class FindActiveTest extends TestCase
         $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $acceptHelper->expects(self::exactly(3))
+        $matcher      = self::exactly(3);
+        $acceptHelper->expects($matcher)
             ->method('accept')
-            ->withConsecutive([$page1], [$page2], [$parentPage])
-            ->willReturnOnConsecutiveCalls(true, true, true);
+            ->willReturnCallback(
+                static function (AbstractPage | PageInterface $page, bool $recursive = true) use ($matcher, $page1, $page2, $parentPage): bool {
+                    match ($matcher->numberOfInvocations()) {
+                        1 => self::assertSame($page1, $page),
+                        2 => self::assertSame($page2, $page),
+                        default => self::assertSame($parentPage, $page),
+                    };
+
+                    self::assertTrue($recursive);
+
+                    return true;
+                },
+            );
 
         $helper = new FindActive($acceptHelper);
 
@@ -463,7 +484,6 @@ final class FindActiveTest extends TestCase
     /**
      * @throws Exception
      * @throws InvalidArgumentException
-     * @throws \Mezzio\Navigation\Exception\InvalidArgumentException
      */
     public function testFindActiveOneActivePageRecursive3(): void
     {
@@ -529,10 +549,24 @@ final class FindActiveTest extends TestCase
         $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $acceptHelper->expects(self::exactly(5))
+        $matcher      = self::exactly(5);
+        $acceptHelper->expects($matcher)
             ->method('accept')
-            ->withConsecutive([$page1], [$page2], [$parentPage], [$parentParentPage], [$parentParentParentPage])
-            ->willReturnOnConsecutiveCalls(true, true, true, true, true);
+            ->willReturnCallback(
+                static function (AbstractPage | PageInterface $page, bool $recursive = true) use ($matcher, $page1, $page2, $parentPage, $parentParentPage, $parentParentParentPage): bool {
+                    match ($matcher->numberOfInvocations()) {
+                        1 => self::assertSame($page1, $page),
+                        2 => self::assertSame($page2, $page),
+                        4 => self::assertSame($parentParentPage, $page),
+                        5 => self::assertSame($parentParentParentPage, $page),
+                        default => self::assertSame($parentPage, $page),
+                    };
+
+                    self::assertTrue($recursive);
+
+                    return true;
+                },
+            );
 
         $helper = new FindActive($acceptHelper);
 
@@ -544,7 +578,6 @@ final class FindActiveTest extends TestCase
     /**
      * @throws Exception
      * @throws InvalidArgumentException
-     * @throws \Mezzio\Navigation\Exception\InvalidArgumentException
      */
     public function testFindActiveOneActivePageRecursive4(): void
     {
@@ -609,10 +642,24 @@ final class FindActiveTest extends TestCase
         $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $acceptHelper->expects(self::exactly(5))
+        $matcher      = self::exactly(5);
+        $acceptHelper->expects($matcher)
             ->method('accept')
-            ->withConsecutive([$page1], [$page2], [$parentPage], [$parentParentPage], [$parentParentParentPage])
-            ->willReturnOnConsecutiveCalls(true, true, true, true, true);
+            ->willReturnCallback(
+                static function (AbstractPage | PageInterface $page, bool $recursive = true) use ($matcher, $page1, $page2, $parentPage, $parentParentPage, $parentParentParentPage): bool {
+                    match ($matcher->numberOfInvocations()) {
+                        1 => self::assertSame($page1, $page),
+                        2 => self::assertSame($page2, $page),
+                        4 => self::assertSame($parentParentPage, $page),
+                        5 => self::assertSame($parentParentParentPage, $page),
+                        default => self::assertSame($parentPage, $page),
+                    };
+
+                    self::assertTrue($recursive);
+
+                    return true;
+                },
+            );
 
         $helper = new FindActive($acceptHelper);
 
@@ -626,7 +673,6 @@ final class FindActiveTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws InvalidArgumentException
      * @throws \Laminas\Navigation\Exception\InvalidArgumentException
      */
     public function testFindActiveOneActivePageRecursive5(): void
@@ -689,10 +735,24 @@ final class FindActiveTest extends TestCase
         $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $acceptHelper->expects(self::exactly(5))
+        $matcher      = self::exactly(5);
+        $acceptHelper->expects($matcher)
             ->method('accept')
-            ->withConsecutive([$page1], [$page2], [$parentPage], [$parentParentPage], [$parentParentParentPage])
-            ->willReturnOnConsecutiveCalls(true, true, true, true, true);
+            ->willReturnCallback(
+                static function (AbstractPage | PageInterface $page, bool $recursive = true) use ($matcher, $page1, $page2, $parentPage, $parentParentPage, $parentParentParentPage): bool {
+                    match ($matcher->numberOfInvocations()) {
+                        1 => self::assertSame($page1, $page),
+                        2 => self::assertSame($page2, $page),
+                        4 => self::assertSame($parentParentPage, $page),
+                        5 => self::assertSame($parentParentParentPage, $page),
+                        default => self::assertSame($parentPage, $page),
+                    };
+
+                    self::assertTrue($recursive);
+
+                    return true;
+                },
+            );
 
         $helper = new FindActive($acceptHelper);
 
@@ -706,7 +766,6 @@ final class FindActiveTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws InvalidArgumentException
      * @throws \Laminas\Navigation\Exception\InvalidArgumentException
      */
     public function testFindActiveOneActivePageRecursive6(): void
@@ -792,10 +851,26 @@ final class FindActiveTest extends TestCase
         $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $acceptHelper->expects(self::exactly(4))
+        $matcher      = self::exactly(4);
+        $acceptHelper->expects($matcher)
             ->method('accept')
-            ->withConsecutive([$page1], [$page2], [$page3], [$parentPage])
-            ->willReturnOnConsecutiveCalls(true, false, false, true);
+            ->willReturnCallback(
+                static function (AbstractPage | PageInterface $page, bool $recursive = true) use ($matcher, $page1, $page2, $page3, $parentPage): bool {
+                    match ($matcher->numberOfInvocations()) {
+                        1 => self::assertSame($page1, $page),
+                        2 => self::assertSame($page2, $page),
+                        3 => self::assertSame($page3, $page),
+                        default => self::assertSame($parentPage, $page),
+                    };
+
+                    self::assertTrue($recursive);
+
+                    return match ($matcher->numberOfInvocations()) {
+                        2, 3 => false,
+                        default => true,
+                    };
+                },
+            );
 
         $helper = new FindActive($acceptHelper);
 
@@ -809,7 +884,6 @@ final class FindActiveTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws InvalidArgumentException
      * @throws \Laminas\Navigation\Exception\InvalidArgumentException
      */
     public function testFindActiveOneActivePageRecursive7(): void
@@ -873,10 +947,22 @@ final class FindActiveTest extends TestCase
         $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $acceptHelper->expects(self::exactly(3))
+        $matcher      = self::exactly(3);
+        $acceptHelper->expects($matcher)
             ->method('accept')
-            ->withConsecutive([$page1], [$page2], [$parentPage])
-            ->willReturnOnConsecutiveCalls(true, true, true);
+            ->willReturnCallback(
+                static function (AbstractPage | PageInterface $page, bool $recursive = true) use ($matcher, $page1, $page2, $parentPage): bool {
+                    match ($matcher->numberOfInvocations()) {
+                        1 => self::assertSame($page1, $page),
+                        2 => self::assertSame($page2, $page),
+                        default => self::assertSame($parentPage, $page),
+                    };
+
+                    self::assertTrue($recursive);
+
+                    return true;
+                },
+            );
 
         $helper = new FindActive($acceptHelper);
 
@@ -887,7 +973,6 @@ final class FindActiveTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws InvalidArgumentException
      * @throws \Laminas\Navigation\Exception\InvalidArgumentException
      */
     public function testFindActiveOneActivePageRecursive8(): void
@@ -951,10 +1036,24 @@ final class FindActiveTest extends TestCase
         $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $acceptHelper->expects(self::exactly(5))
+        $matcher      = self::exactly(5);
+        $acceptHelper->expects($matcher)
             ->method('accept')
-            ->withConsecutive([$page1], [$page2], [$parentPage], [$parentParentPage], [$parentParentParentPage])
-            ->willReturnOnConsecutiveCalls(true, true, true, true, true);
+            ->willReturnCallback(
+                static function (AbstractPage | PageInterface $page, bool $recursive = true) use ($matcher, $page1, $page2, $parentPage, $parentParentPage, $parentParentParentPage): bool {
+                    match ($matcher->numberOfInvocations()) {
+                        1 => self::assertSame($page1, $page),
+                        2 => self::assertSame($page2, $page),
+                        4 => self::assertSame($parentParentPage, $page),
+                        5 => self::assertSame($parentParentParentPage, $page),
+                        default => self::assertSame($parentPage, $page),
+                    };
+
+                    self::assertTrue($recursive);
+
+                    return true;
+                },
+            );
 
         $helper = new FindActive($acceptHelper);
 

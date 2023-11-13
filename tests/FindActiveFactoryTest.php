@@ -2,7 +2,7 @@
 /**
  * This file is part of the mimmi20/navigation-helper-findactive package.
  *
- * Copyright (c) 2021, Thomas Mueller <mimmi20@live.de>
+ * Copyright (c) 2021-2023, Thomas Mueller <mimmi20@live.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -15,18 +15,19 @@ namespace Mimmi20Test\NavigationHelper\FindActive;
 use AssertionError;
 use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
-use Mezzio\GenericAuthorization\AuthorizationInterface;
+use Mimmi20\Mezzio\GenericAuthorization\AuthorizationInterface;
 use Mimmi20\NavigationHelper\Accept\AcceptHelperInterface;
 use Mimmi20\NavigationHelper\FindActive\FindActive;
 use Mimmi20\NavigationHelper\FindActive\FindActiveFactory;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
-use SebastianBergmann\RecursionContext\InvalidArgumentException;
+use Psr\Container\ContainerExceptionInterface;
 
 final class FindActiveFactoryTest extends TestCase
 {
     private FindActiveFactory $factory;
 
+    /** @throws void */
     protected function setUp(): void
     {
         $this->factory = new FindActiveFactory();
@@ -34,7 +35,7 @@ final class FindActiveFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws InvalidArgumentException
+     * @throws ContainerExceptionInterface
      */
     public function testInvocationWithoutOptions(): void
     {
@@ -69,7 +70,7 @@ final class FindActiveFactoryTest extends TestCase
 
     /**
      * @throws Exception
-     * @throws InvalidArgumentException
+     * @throws ContainerExceptionInterface
      */
     public function testInvocationWithOptions(): void
     {
@@ -104,7 +105,7 @@ final class FindActiveFactoryTest extends TestCase
         $helper = ($this->factory)(
             $container,
             '',
-            $options
+            $options,
         );
 
         self::assertInstanceOf(FindActive::class, $helper);
@@ -112,6 +113,7 @@ final class FindActiveFactoryTest extends TestCase
 
     /**
      * @throws Exception
+     * @throws ContainerExceptionInterface
      */
     public function testInvocationWithAssertionError(): void
     {
@@ -140,7 +142,7 @@ final class FindActiveFactoryTest extends TestCase
         ($this->factory)(
             $container,
             '',
-            $options
+            $options,
         );
     }
 }
