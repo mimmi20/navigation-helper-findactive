@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="navigation-helper-acceptpage" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
-    <description>navigation-helper-acceptpage</description>
+<ruleset name="navigation-helper-findactive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
+    <description>navigation-helper-findactive</description>
 
     <arg name="report" value="full"/>
     <arg value="wps"/>

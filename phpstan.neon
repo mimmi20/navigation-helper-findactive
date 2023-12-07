@@ -93,5 +93,6 @@ parameters:
     check:
       missingCheckedExceptionInThrows: true
       tooWideThrowType: true
+
 #  ignoreErrors:
 #    - '~MockObject~'
