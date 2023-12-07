@@ -39,7 +39,7 @@
     </source>
 
     <testsuites>
-        <testsuite name="navigation-helper-acceptpage Test Suite">
+        <testsuite name="navigation-helper-findactive Test Suite">
             <directory>tests/</directory>
         </testsuite>
     </testsuites>
