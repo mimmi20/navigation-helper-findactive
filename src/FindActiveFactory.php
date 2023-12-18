@@ -12,11 +12,11 @@ declare(strict_types = 1);
 
 namespace Mimmi20\NavigationHelper\FindActive;
 
-use Interop\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Mimmi20\NavigationHelper\Accept\AcceptHelperInterface;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 
 use function assert;
 
