@@ -13,10 +13,10 @@ declare(strict_types = 1);
 namespace Mimmi20Test\NavigationHelper\FindActive;
 
 use Laminas\Navigation\Page\AbstractPage;
-use Mezzio\Navigation\Exception\InvalidArgumentException;
-use Mezzio\Navigation\Navigation;
-use Mezzio\Navigation\Page\PageInterface;
-use Mezzio\Navigation\Page\Uri;
+use Mimmi20\Mezzio\Navigation\Exception\InvalidArgumentException;
+use Mimmi20\Mezzio\Navigation\Navigation;
+use Mimmi20\Mezzio\Navigation\Page\PageInterface;
+use Mimmi20\Mezzio\Navigation\Page\Uri;
 use Mimmi20\NavigationHelper\Accept\AcceptHelperInterface;
 use Mimmi20\NavigationHelper\FindActive\FindActive;
 use PHPUnit\Framework\Exception;
