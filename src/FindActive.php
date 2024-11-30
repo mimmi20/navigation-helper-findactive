@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the mimmi20/navigation-helper-findactive package.
  *
@@ -17,6 +18,7 @@ use Laminas\Navigation\Page\AbstractPage;
 use Mimmi20\Mezzio\Navigation\ContainerInterface;
 use Mimmi20\Mezzio\Navigation\Page\PageInterface;
 use Mimmi20\NavigationHelper\Accept\AcceptHelperInterface;
+use Override;
 use RecursiveIteratorIterator;
 
 use function assert;
@@ -24,12 +26,12 @@ use function get_debug_type;
 use function is_int;
 use function sprintf;
 
-final class FindActive implements FindActiveInterface
+final readonly class FindActive implements FindActiveInterface
 {
-    private const START_DEPTH = -1;
+    private const int START_DEPTH = -1;
 
     /** @throws void */
-    public function __construct(private readonly AcceptHelperInterface $acceptHelper)
+    public function __construct(private AcceptHelperInterface $acceptHelper)
     {
         // nothing to do
     }
@@ -50,6 +52,7 @@ final class FindActive implements FindActiveInterface
      *
      * @throws void
      */
+    #[Override]
     public function find(
         AbstractContainer | ContainerInterface $container,
         int | null $minDepth,

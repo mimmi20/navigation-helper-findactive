@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the mimmi20/navigation-helper-findactive package.
  *
@@ -18,6 +19,7 @@ use Mimmi20\Mezzio\GenericAuthorization\AuthorizationInterface;
 use Mimmi20\NavigationHelper\Accept\AcceptHelperInterface;
 use Mimmi20\NavigationHelper\FindActive\FindActive;
 use Mimmi20\NavigationHelper\FindActive\FindActiveFactory;
+use Override;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
@@ -28,6 +30,7 @@ final class FindActiveFactoryTest extends TestCase
     private FindActiveFactory $factory;
 
     /** @throws void */
+    #[Override]
     protected function setUp(): void
     {
         $this->factory = new FindActiveFactory();

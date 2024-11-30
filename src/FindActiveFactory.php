@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of the mimmi20/navigation-helper-findactive package.
  *
@@ -15,6 +16,7 @@ namespace Mimmi20\NavigationHelper\FindActive;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Mimmi20\NavigationHelper\Accept\AcceptHelperInterface;
+use Override;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 
@@ -33,6 +35,7 @@ final class FindActiveFactory implements FactoryInterface
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      */
+    #[Override]
     public function __invoke(ContainerInterface $container, $requestedName, array | null $options = null): FindActive
     {
         assert($container instanceof ServiceLocatorInterface);
