@@ -45,7 +45,7 @@ final class FindActiveFactoryTest extends TestCase
         $options = [
             'authorization' => null,
             'renderInvisible' => false,
-            'role' => null,
+            'roles' => [],
         ];
 
         $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
@@ -79,12 +79,12 @@ final class FindActiveFactoryTest extends TestCase
     {
         $auth            = $this->createMock(AuthorizationInterface::class);
         $renderInvisible = true;
-        $role            = 'test-role';
+        $roles           = ['test-role'];
 
         $options = [
             'authorization' => $auth,
             'renderInvisible' => $renderInvisible,
-            'role' => $role,
+            'roles' => $roles,
         ];
 
         $acceptHelper = $this->getMockBuilder(AcceptHelperInterface::class)
@@ -122,12 +122,12 @@ final class FindActiveFactoryTest extends TestCase
     {
         $auth            = $this->createMock(AuthorizationInterface::class);
         $renderInvisible = true;
-        $role            = 'test-role';
+        $roles           = ['test-role'];
 
         $options = [
             'authorization' => $auth,
             'renderInvisible' => $renderInvisible,
-            'role' => $role,
+            'roles' => $roles,
         ];
 
         $container = $this->getMockBuilder(ContainerInterface::class)
