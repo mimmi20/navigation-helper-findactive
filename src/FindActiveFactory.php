@@ -44,7 +44,7 @@ final class FindActiveFactory implements FactoryInterface
             [
                 'authorization' => $options['authorization'] ?? null,
                 'renderInvisible' => $options['renderInvisible'] ?? false,
-                'role' => $options['role'] ?? null,
+                'roles' => $options['roles'] ?? [],
             ],
         );
 
