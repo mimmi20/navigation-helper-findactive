@@ -27,17 +27,18 @@ final class FindActiveFactory implements FactoryInterface
     /**
      * Create and return a navigation view helper instance.
      *
-     * @param string            $requestedName
      * @param array<mixed>|null $options
      *
      * @throws ContainerExceptionInterface
      *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      */
     #[Override]
-    public function __invoke(ContainerInterface $container, $requestedName, array | null $options = null): FindActive
-    {
+    public function __invoke(
+        ContainerInterface $container,
+        string $requestedName,
+        array | null $options = null,
+    ): FindActive {
         assert($container instanceof ServiceLocatorInterface);
         $acceptHelper = $container->build(
             AcceptHelperInterface::class,
