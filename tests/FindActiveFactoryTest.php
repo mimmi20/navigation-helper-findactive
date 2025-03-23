@@ -19,7 +19,7 @@ use Mimmi20\Mezzio\GenericAuthorization\AuthorizationInterface;
 use Mimmi20\NavigationHelper\Accept\AcceptHelperInterface;
 use Mimmi20\NavigationHelper\FindActive\FindActive;
 use Mimmi20\NavigationHelper\FindActive\FindActiveFactory;
-use Override;
+use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
@@ -27,15 +27,6 @@ use Psr\Container\ContainerInterface;
 
 final class FindActiveFactoryTest extends TestCase
 {
-    private FindActiveFactory $factory;
-
-    /** @throws void */
-    #[Override]
-    protected function setUp(): void
-    {
-        $this->factory = new FindActiveFactory();
-    }
-
     /**
      * @throws Exception
      * @throws ContainerExceptionInterface
@@ -66,7 +57,7 @@ final class FindActiveFactoryTest extends TestCase
             ->with(AcceptHelperInterface::class, $options)
             ->willReturn($acceptHelper);
 
-        $helper = ($this->factory)($container, '');
+        $helper = (new FindActiveFactory())($container, '');
 
         self::assertInstanceOf(FindActive::class, $helper);
     }
@@ -74,6 +65,8 @@ final class FindActiveFactoryTest extends TestCase
     /**
      * @throws Exception
      * @throws ContainerExceptionInterface
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testInvocationWithOptions(): void
     {
@@ -105,7 +98,7 @@ final class FindActiveFactoryTest extends TestCase
             ->with(AcceptHelperInterface::class, $options)
             ->willReturn($acceptHelper);
 
-        $helper = ($this->factory)(
+        $helper = (new FindActiveFactory())(
             $container,
             '',
             $options,
@@ -117,6 +110,8 @@ final class FindActiveFactoryTest extends TestCase
     /**
      * @throws Exception
      * @throws ContainerExceptionInterface
+     * @throws NoPreviousThrowableException
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
     public function testInvocationWithAssertionError(): void
     {
@@ -142,7 +137,7 @@ final class FindActiveFactoryTest extends TestCase
         $this->expectExceptionCode(1);
         $this->expectExceptionMessage('assert($container instanceof ServiceLocatorInterface)');
 
-        ($this->factory)(
+        (new FindActiveFactory())(
             $container,
             '',
             $options,
