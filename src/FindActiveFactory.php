@@ -32,7 +32,6 @@ final class FindActiveFactory implements FactoryInterface
      *
      * @throws ContainerExceptionInterface
      *
-     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      * @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      */
     #[Override]
