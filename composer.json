@@ -1,6 +1,6 @@
 {
   "name": "mimmi20/navigation-helper-findactive",
-  "description": "Provides a find-active helper for Laminas- and Mezzio Navigation",
+  "description": "Provides a find-active helper for Mezzio Navigation",
   "license": "MIT",
   "type": "library",
   "authors": [
